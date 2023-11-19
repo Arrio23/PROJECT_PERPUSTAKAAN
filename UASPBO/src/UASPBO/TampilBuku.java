@@ -126,8 +126,7 @@ public class TampilBuku extends javax.swing.JFrame {
         jButtonCetak = new javax.swing.JButton();
         jTextFieldCari = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jButtonCari = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -299,33 +298,19 @@ public class TampilBuku extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jButtonCetak, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 530, 110, 50));
+
+        jTextFieldCari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldCariKeyReleased(evt);
+            }
+        });
         jPanel1.add(jTextFieldCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 110, 230, -1));
 
         jLabel6.setText("Cari Buku");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 80, -1, -1));
 
-        jButtonCari.setText("Cari");
-        jButtonCari.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCariActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButtonCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 110, -1, -1));
-
-        jPanel2.setBackground(new java.awt.Color(102, 255, 51));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 580, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 210, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 580, 210));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ISBN", "Judul", "Tahun", "Penerbit" }));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 110, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -516,62 +501,123 @@ public class TampilBuku extends javax.swing.JFrame {
 
     private void jButtonCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCetakActionPerformed
         // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) jTableBuku.getModel();
         String jrxmlFile = "src/report/reportBuku.jrxml";
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("UASPBOPU");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Buku> cq = cb.createQuery(Buku.class);
-        Root<Buku> stud = cq.from(Buku.class);
-        cq.select(stud);
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = em.createQuery("SELECT b FROM Buku b WHERE b.isbn LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
-        Query query = em.createQuery("SELECT b FROM Buku b");
-        List<Buku> result = query.getResultList();
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
 
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
 
-        try {
-            // TODO add your handling code here:
-            // JasperPrint jp = JasperFillManager.fillReport(jasperFile.getPath(), null, conn);
-            JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
-            JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
-            JasperViewer jv = new JasperViewer(jp, false);
-            jv.setVisible(true);
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = em.createQuery("SELECT b FROM Buku b WHERE b.judul LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
-        } catch (JRException ex) {
-            Logger.getLogger(TampilBuku.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
 
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = em.createQuery("SELECT b FROM Buku b WHERE b.tahun LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = em.createQuery("SELECT b FROM Buku b WHERE b.penerbit LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
         }
-    }//GEN-LAST:event_jButtonCetakActionPerformed
 
-    private void jButtonCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCariActionPerformed
+//        model.getRowCount();
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<Buku> cq = cb.createQuery(Buku.class);
+//        Root<Buku> stud = cq.from(Buku.class);
+//        cq.select(stud);
+//
+//        Query query = em.createQuery("SELECT b FROM Buku b");
+//        List<Buku> result = query.getResultList();
+////
+//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+//
+//        try {
+//            // TODO add your handling code here:
+//            JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+//            JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+//            JasperViewer jv = new JasperViewer(jp, false);
+//            jv.setVisible(true);
+//
+//        } catch (JRException ex) {
+//            Logger.getLogger(TampilBuku.class
+//                    .getName()).log(Level.SEVERE, null, ex);
+//        }
         
-        String cariData = jTextFieldCari.getText();
-        cariDiDatabase(cariData);
-    }//GEN-LAST:event_jButtonCariActionPerformed
-
-    private void cariDiDatabase(String cariData){
-        DefaultTableModel model = (DefaultTableModel) jTableBuku.getModel();
-        model.setRowCount(0);
-
-        EntityManager emf = Persistence.createEntityManagerFactory("UASPBOPU").createEntityManager();
-
-        emf.getTransaction().begin();
-
-        Query query = emf.createQuery("SELECT b FROM Buku b WHERE b.judul LIKE :cariData");
-        query.setParameter("cariData", "%" + cariData + "%");
-        List<Buku> result = query.getResultList();
-        
-        for(Buku buku : result){
-            model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getPenerbit(), buku.getTahun()});
-        }
-        
-        emf.getTransaction().commit();
+        jTextFieldCari.setText("");
+        tampil();
+        em.getTransaction().commit();
 
         emf.close();
-    }
+    }//GEN-LAST:event_jButtonCetakActionPerformed
+
     private void jButtonSimpanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSimpanMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSimpanMouseClicked
@@ -581,7 +627,7 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonSimpanMouseMoved
 
     private void jButtonSimpanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSimpanMouseExited
-        jButtonSimpan.setBackground(new Color(255,255,255));
+        jButtonSimpan.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonSimpanMouseExited
 
     private void jButtonHapusMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonHapusMouseMoved
@@ -589,7 +635,7 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonHapusMouseMoved
 
     private void jButtonHapusMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonHapusMouseExited
-        jButtonHapus.setBackground(new Color(255,255,255));
+        jButtonHapus.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonHapusMouseExited
 
     private void jButtonEditMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonEditMouseMoved
@@ -597,7 +643,7 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonEditMouseMoved
 
     private void jButtonEditMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonEditMouseExited
-        jButtonEdit.setBackground(new Color(255,255,255));
+        jButtonEdit.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonEditMouseExited
 
     private void jButtonUploadMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUploadMouseMoved
@@ -605,7 +651,7 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonUploadMouseMoved
 
     private void jButtonUploadMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUploadMouseExited
-        jButtonUpload.setBackground(new Color(255,255,255));
+        jButtonUpload.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonUploadMouseExited
 
     private void jButtonCetakMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCetakMouseMoved
@@ -613,7 +659,7 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCetakMouseMoved
 
     private void jButtonCetakMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCetakMouseExited
-        jButtonCetak.setBackground(new Color(255,255,255));
+        jButtonCetak.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonCetakMouseExited
 
     private void jButtonKembaliMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonKembaliMouseMoved
@@ -621,8 +667,48 @@ public class TampilBuku extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonKembaliMouseMoved
 
     private void jButtonKembaliMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonKembaliMouseExited
-        jButtonKembali.setBackground(new Color(255,255,255));
+        jButtonKembali.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonKembaliMouseExited
+
+    private void jTextFieldCariKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCariKeyReleased
+        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) jTableBuku.getModel();
+        model.setRowCount(0);
+
+        EntityManager emf = Persistence.createEntityManagerFactory("UASPBOPU").createEntityManager();
+
+        emf.getTransaction().begin();
+
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = emf.createQuery("SELECT b FROM Buku b WHERE b.isbn LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = emf.createQuery("SELECT b FROM Buku b WHERE b.judul LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = emf.createQuery("SELECT b FROM Buku b WHERE b.tahun LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = emf.createQuery("SELECT b FROM Buku b WHERE b.penerbit LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Buku> result = query.getResultList();
+            for (Buku buku : result) {
+                model.addRow(new Object[]{buku.getIsbn(), buku.getJudul(), buku.getTahun(), buku.getPenerbit()});
+            }
+        }
+
+        emf.getTransaction().commit();
+
+        emf.close();
+    }//GEN-LAST:event_jTextFieldCariKeyReleased
 
     /**
      * @param args the command line arguments
@@ -669,13 +755,13 @@ public class TampilBuku extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonCari;
     private javax.swing.JButton jButtonCetak;
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonHapus;
     private javax.swing.JButton jButtonKembali;
     private javax.swing.JButton jButtonSimpan;
     private javax.swing.JButton jButtonUpload;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -683,7 +769,6 @@ public class TampilBuku extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableBuku;
     private javax.swing.JTextField jTextFieldCari;

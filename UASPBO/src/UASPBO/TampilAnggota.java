@@ -98,7 +98,6 @@ public class TampilAnggota extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextFieldCari = new javax.swing.JTextField();
-        jButtonCari = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jTextFieldID = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -115,6 +114,7 @@ public class TampilAnggota extends javax.swing.JFrame {
         jButtonUpload = new javax.swing.JButton();
         jButtonCetak = new javax.swing.JButton();
         jButtonKembali = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -126,17 +126,15 @@ public class TampilAnggota extends javax.swing.JFrame {
         jLabel1.setText("DATA ANGGOTA");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(364, 15, -1, -1));
 
-        jLabel2.setText("Cari");
+        jLabel2.setText("Cari Anggota");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 81, -1, -1));
-        jPanel1.add(jTextFieldCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 108, 220, -1));
 
-        jButtonCari.setText("Cari");
-        jButtonCari.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCariActionPerformed(evt);
+        jTextFieldCari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldCariKeyReleased(evt);
             }
         });
-        jPanel1.add(jButtonCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(291, 108, -1, -1));
+        jPanel1.add(jTextFieldCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 108, 220, -1));
 
         jLabel3.setText("ID Anggota");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 181, -1, -1));
@@ -287,6 +285,9 @@ public class TampilAnggota extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jButtonKembali, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 560, 90, 50));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Nama", "Alamat", "Telepon" }));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 110, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -507,44 +508,104 @@ public class TampilAnggota extends javax.swing.JFrame {
         jButtonKembali.setBackground(new Color(255,255,255));
     }//GEN-LAST:event_jButtonKembaliMouseExited
 
-    private void jButtonCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCariActionPerformed
-        String cariData = jTextFieldCari.getText();
-        cariDiDatabase(cariData);
-    }//GEN-LAST:event_jButtonCariActionPerformed
-
     private void jButtonCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCetakActionPerformed
         // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) jTableAnggota.getModel();
         String jrxmlFile = "src/report/reportAnggota.jrxml";
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("UASPBOPU");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Anggota> cq = cb.createQuery(Anggota.class);
-        Root<Anggota> stud = cq.from(Anggota.class);
-        cq.select(stud);
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = em.createQuery("SELECT a FROM Anggota a WHERE a.id LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
-        Query query = em.createQuery("SELECT a FROM Anggota a");
-        List<Anggota> result = query.getResultList();
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
 
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = em.createQuery("SELECT a FROM Anggota a WHERE a.nama LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
-        try {
-            // TODO add your handling code here:
-            // JasperPrint jp = JasperFillManager.fillReport(jasperFile.getPath(), null, conn);
-            JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
-            JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
-            JasperViewer jv = new JasperViewer(jp, false);
-            jv.setVisible(true);
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
 
-        } catch (JRException ex) {
-            Logger.getLogger(TampilAnggota.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = em.createQuery("SELECT a FROM Anggota a WHERE a.alamat LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = em.createQuery("SELECT a FROM Anggota a WHERE a.telepon LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
+        jTextFieldCari.setText("");
+        tampil();
+        em.getTransaction().commit();
+
+        emf.close();
     }//GEN-LAST:event_jButtonCetakActionPerformed
 
-    private void cariDiDatabase(String cariData){
+    private void jTextFieldCariKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCariKeyReleased
+        // TODO add your handling code here:
         DefaultTableModel model = (DefaultTableModel) jTableAnggota.getModel();
         model.setRowCount(0);
 
@@ -552,18 +613,41 @@ public class TampilAnggota extends javax.swing.JFrame {
 
         emf.getTransaction().begin();
 
-        Query query = emf.createQuery("SELECT a FROM Anggota a WHERE a.namaAnggota LIKE :cariData");
-        query.setParameter("cariData", "%" + cariData + "%");
-        List<Anggota> result = query.getResultList();
-        
-        for(Anggota anggota : result){
-            model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = emf.createQuery("SELECT a FROM Anggota a WHERE a.id LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = emf.createQuery("SELECT a FROM Anggota a WHERE a.nama LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = emf.createQuery("SELECT a FROM Anggota a WHERE a.alamat LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+            
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = emf.createQuery("SELECT a FROM Anggota a WHERE a.telepon LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Anggota> result = query.getResultList();
+            for (Anggota anggota : result) {
+                model.addRow(new Object[]{anggota.getId(), anggota.getNama(), anggota.getAlamat(), anggota.getTelepon()});
+            }
+    
         }
-        
+
         emf.getTransaction().commit();
 
         emf.close();
-    }
+    }//GEN-LAST:event_jTextFieldCariKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -600,13 +684,13 @@ public class TampilAnggota extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonCari;
     private javax.swing.JButton jButtonCetak;
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonHapus;
     private javax.swing.JButton jButtonKembali;
     private javax.swing.JButton jButtonSimpan;
     private javax.swing.JButton jButtonUpload;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

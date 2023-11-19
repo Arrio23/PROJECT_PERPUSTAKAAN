@@ -56,22 +56,22 @@
 			</line>
 			<staticText>
 				<reportElement style="Column header" x="0" y="19" width="138" height="15" uuid="5856cd87-e7e9-48e1-8b5e-8236ab8a45f3"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Left"/>
 				<text><![CDATA[ISBN BUKU]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Column header" x="138" y="19" width="138" height="15" uuid="629bede2-72a1-4e7f-94ee-944dc0c12618"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Left"/>
 				<text><![CDATA[JUDUL BUKU]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Column header" x="276" y="19" width="138" height="15" uuid="b01704a0-b17e-450d-bdbe-6b7fa5af8a26"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Left"/>
 				<text><![CDATA[TAHUN TERBIT]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Column header" x="414" y="19" width="138" height="15" uuid="4aaff4a2-6a6f-4570-aa7e-6c91b9c8a69b"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Left"/>
 				<text><![CDATA[PENERBIT]]></text>
 			</staticText>
 		</band>

@@ -38,17 +38,16 @@ import org.apache.commons.csv.CSVRecord;
  * @author RIO
  */
 public class TampilSkripsi extends javax.swing.JFrame {
-    
-    public void peringatan(String pesan){
+
+    public void peringatan(String pesan) {
         JOptionPane.showMessageDialog(rootPane, pesan);
     }
-    
+
     ArrayList<Skripsi> dataSkripsi;
 
     /**
      * Creates new form TampilSkripsi
      */
-            
     private void tampil() {
 
         DefaultTableModel model = (DefaultTableModel) jTableSkripsi.getModel();
@@ -81,11 +80,13 @@ public class TampilSkripsi extends javax.swing.JFrame {
         em.close();
         emf.close();
     }
+
     public TampilSkripsi() {
-        
+
         dataSkripsi = new ArrayList<>();
         initComponents();
         tampil();
+
     }
 
     /**
@@ -117,8 +118,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
         jButtonUpload = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jTextFieldCari = new javax.swing.JTextField();
-        jButtonCari = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -149,7 +149,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
         jLabel4.setText("Judul Skripsi");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(88, 343, -1, -1));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setText("DATA SKRIPSI PERPUSTAKAAN UINSA");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(248, 35, -1, -1));
 
@@ -290,23 +290,20 @@ public class TampilSkripsi extends javax.swing.JFrame {
         jLabel6.setText("Cari Skripsi");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 120, -1, -1));
 
-        jTextFieldCari.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldCariActionPerformed(evt);
+        jTextFieldCari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldCariKeyReleased(evt);
             }
         });
         jPanel1.add(jTextFieldCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, 200, -1));
 
-        jButtonCari.setText("Cari");
-        jButtonCari.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCariActionPerformed(evt);
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NIM", "Nama", "Judul", "Tahun" }));
+        jComboBox1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComboBox1MouseClicked(evt);
             }
         });
-        jPanel1.add(jButtonCari, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, -1, -1));
-
-        jPanel2.setBackground(new java.awt.Color(51, 255, 0));
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 220, 530, 230));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 150, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 1210, 830));
 
@@ -395,7 +392,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
             EntityManager entityManager = Persistence.createEntityManagerFactory("UASPBOPU").createEntityManager();
 
             entityManager.getTransaction().begin();
-            Skripsi b = entityManager.find(Skripsi.class,nim);
+            Skripsi b = entityManager.find(Skripsi.class, nim);
 
             b.setNim(nim);
             b.setNama(nama);
@@ -420,33 +417,98 @@ public class TampilSkripsi extends javax.swing.JFrame {
 
     private void jButtonCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCetakActionPerformed
         // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) jTableSkripsi.getModel();
         String jrxmlFile = "src/report/reportSkripsi.jrxml";
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("UASPBOPU");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Skripsi> cq = cb.createQuery(Skripsi.class);
-        Root<Skripsi> stud = cq.from(Skripsi.class);
-        cq.select(stud);
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = em.createQuery("SELECT s FROM Skripsi s WHERE s.nim LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
 
-        TypedQuery<Skripsi> q = em.createQuery(cq);
-        Query query = em.createQuery("SELECT s FROM Skripsi s");
-        List<Buku> result = query.getResultList();
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
 
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
-        try {
-            // TODO add your handling code here:
-            // JasperPrint jp = JasperFillManager.fillReport(jasperFile.getPath(), null, conn);
-            JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
-            JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
-            JasperViewer jv = new JasperViewer(jp, false);
-            jv.setVisible(true);
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
 
-        } catch (JRException ex) {
-            Logger.getLogger(TampilSkripsi.class
-                    .getName()).log(Level.SEVERE, null, ex);
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = em.createQuery("SELECT b FROM Skripsi b WHERE b.judul LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = em.createQuery("SELECT b FROM Skripsi b WHERE b.tahun LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = em.createQuery("SELECT b FROM Skripsi b WHERE b.penerbit LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(result);
+
+            try {
+                // TODO add your handling code here:
+                JasperReport jr = JasperCompileManager.compileReport(jrxmlFile);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, dataSource);
+                JasperViewer jv = new JasperViewer(jp, false);
+                jv.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(TampilBuku.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
+        jTextFieldCari.setText("");
+        tampil();
+        em.getTransaction().commit();
+
+        emf.close();
     }//GEN-LAST:event_jButtonCetakActionPerformed
 
     private void jButtonKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonKembaliActionPerformed
@@ -474,16 +536,12 @@ public class TampilSkripsi extends javax.swing.JFrame {
         jTextFieldTahun.setText(tahun);
     }//GEN-LAST:event_jTableSkripsiMouseClicked
 
-    private void jTextFieldCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldCariActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldCariActionPerformed
-
     private void jButtonSimpanMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSimpanMouseMoved
         jButtonSimpan.setBackground(Color.GRAY);
     }//GEN-LAST:event_jButtonSimpanMouseMoved
 
     private void jButtonSimpanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSimpanMouseExited
-        jButtonSimpan.setBackground(new Color(255,255,255));
+        jButtonSimpan.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonSimpanMouseExited
 
     private void jButtonEditMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonEditMouseMoved
@@ -491,7 +549,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonEditMouseMoved
 
     private void jButtonEditMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonEditMouseExited
-        jButtonEdit.setBackground(new Color(255,255,255));
+        jButtonEdit.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonEditMouseExited
 
     private void jButtonHapusMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonHapusMouseMoved
@@ -499,7 +557,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonHapusMouseMoved
 
     private void jButtonHapusMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonHapusMouseExited
-        jButtonHapus.setBackground(new Color(255,255,255));
+        jButtonHapus.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonHapusMouseExited
 
     private void jButtonCetakMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCetakMouseMoved
@@ -507,7 +565,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCetakMouseMoved
 
     private void jButtonCetakMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCetakMouseExited
-        jButtonCetak.setBackground(new Color(255,255,255));
+        jButtonCetak.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonCetakMouseExited
 
     private void jButtonUploadMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUploadMouseMoved
@@ -515,7 +573,7 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonUploadMouseMoved
 
     private void jButtonUploadMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonUploadMouseExited
-        jButtonUpload.setBackground(new Color(255,255,255));
+        jButtonUpload.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonUploadMouseExited
 
     private void jButtonKembaliMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonKembaliMouseMoved
@@ -523,13 +581,8 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonKembaliMouseMoved
 
     private void jButtonKembaliMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonKembaliMouseExited
-        jButtonKembali.setBackground(new Color(255,255,255));
+        jButtonKembali.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_jButtonKembaliMouseExited
-
-    private void jButtonCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCariActionPerformed
-        String cariData = jTextFieldCari.getText();
-        cariDiDatabase(cariData);
-    }//GEN-LAST:event_jButtonCariActionPerformed
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUploadActionPerformed
         // TODO add your handling code here:
@@ -574,7 +627,13 @@ public class TampilSkripsi extends javax.swing.JFrame {
         tampil();
     }//GEN-LAST:event_jButtonUploadActionPerformed
 
-    private void cariDiDatabase(String cariData){
+    private void jComboBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox1MouseClicked
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_jComboBox1MouseClicked
+
+    private void jTextFieldCariKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCariKeyReleased
+        // TODO add your handling code here:
         DefaultTableModel model = (DefaultTableModel) jTableSkripsi.getModel();
         model.setRowCount(0);
 
@@ -582,18 +641,37 @@ public class TampilSkripsi extends javax.swing.JFrame {
 
         emf.getTransaction().begin();
 
-        Query query = emf.createQuery("SELECT s FROM Skripsi s WHERE s.nim LIKE :cariData");
-        query.setParameter("cariData", "%" + cariData + "%");
-        List<Skripsi> result = query.getResultList();
-        
-        for(Skripsi skripsi : result){
-            model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+        if (jComboBox1.getSelectedIndex() == 0) {
+            Query query = emf.createQuery("SELECT s FROM Skripsi s WHERE s.nim LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 1) {
+            Query query = emf.createQuery("SELECT s FROM Skripsi s WHERE s.nama LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            Query query = emf.createQuery("SELECT s FROM Skripsi s WHERE s.judul LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            Query query = emf.createQuery("SELECT s FROM Skripsi s WHERE s.tahun LIKE '%" + jTextFieldCari.getText().toLowerCase() + "%'");
+            List<Skripsi> result = query.getResultList();
+            for (Skripsi skripsi : result) {
+                model.addRow(new Object[]{skripsi.getNim(), skripsi.getNama(), skripsi.getJudul(), skripsi.getTahun()});
+            }
         }
-        
+
         emf.getTransaction().commit();
 
         emf.close();
-    }
+    }//GEN-LAST:event_jTextFieldCariKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -630,13 +708,13 @@ public class TampilSkripsi extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonCari;
     private javax.swing.JButton jButtonCetak;
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonHapus;
     private javax.swing.JButton jButtonKembali;
     private javax.swing.JButton jButtonSimpan;
     private javax.swing.JButton jButtonUpload;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -644,7 +722,6 @@ public class TampilSkripsi extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableSkripsi;
     private javax.swing.JTextField jTextFieldCari;

@@ -6,6 +6,7 @@
     <class>UASPBO.Skripsi</class>
     <class>UASPBO.Anggota</class>
     <class>UASPBO.Peminjaman</class>
+    <class>UASPBO.Akun</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
       <property name="javax.persistence.jdbc.user" value="postgres"/>

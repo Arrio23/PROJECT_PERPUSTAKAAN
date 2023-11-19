@@ -5,6 +5,13 @@
 package UASPBO;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -12,11 +19,11 @@ import java.awt.Color;
  */
 public class login extends javax.swing.JFrame {
 
-    int x, y;
     /**
      * Creates new form login
      */
     public login() {
+        dataAkun = new ArrayList<>();
         initComponents();
     }
 
@@ -30,36 +37,28 @@ public class login extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldUsername = new javax.swing.JTextField();
         jPanelMasuk = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        jPasswordFieldPassword = new javax.swing.JPasswordField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                formMouseDragged(evt);
-            }
-        });
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                formMousePressed(evt);
-            }
-        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField1.setFont(new java.awt.Font("Serif", 0, 18)); // NOI18N
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldUsername.setFont(new java.awt.Font("Serif", 0, 18)); // NOI18N
+        jTextFieldUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                jTextFieldUsernameActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 266, 46));
+        jPanel1.add(jTextFieldUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 266, 46));
 
         jPanelMasuk.setBackground(new java.awt.Color(0, 204, 0));
         jPanelMasuk.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -74,13 +73,10 @@ public class login extends javax.swing.JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jPanelMasukMouseExited(evt);
             }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jPanelMasukMousePressed(evt);
-            }
         });
         jPanelMasuk.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("MASUK");
         jPanelMasuk.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
@@ -94,8 +90,30 @@ public class login extends javax.swing.JFrame {
         jLabel2.setText("Username");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 130, -1, -1));
 
-        jPasswordField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jPanel1.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, 266, 46));
+        jPasswordFieldPassword.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jPanel1.add(jPasswordFieldPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, 266, 46));
+
+        jPanel2.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jPanel2MouseMoved(evt);
+            }
+        });
+        jPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel2MouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel2MouseExited(evt);
+            }
+        });
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel4.setText("BUAT");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, -1, -1));
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 380, 266, 50));
 
         jLabel5.setBackground(new java.awt.Color(51, 51, 255));
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/uin.jpg"))); // NOI18N
@@ -116,42 +134,61 @@ public class login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
-        x = evt.getX();
-        y = evt.getY();
-    }//GEN-LAST:event_formMousePressed
-
-    private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
-        int xx = evt.getXOnScreen();
-        int yy = evt.getYOnScreen();
-        this.setLocation(xx = x, yy = y);
-    }//GEN-LAST:event_formMouseDragged
-
     private void jPanelMasukMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelMasukMouseClicked
         // TODO add your handling code here:
-        Menu frameMenu = new Menu();
-        frameMenu.setVisible(true);
+        EntityManager emf = Persistence.createEntityManagerFactory("UASPBOPU").createEntityManager();
+
+        emf.getTransaction().begin();
+
+        Query query = emf.createQuery("SELECT a FROM Akun a");
+        List<Akun> list = query.getResultList();
+        for (Akun a : list) {
+            if (jTextFieldUsername.getText().equals(a.getUsername()) && jPasswordFieldPassword.getText().equals(a.getPassword())) {
+                Menu frameMenu = new Menu();
+                frameMenu.setVisible(true);
+            } else{
+                JOptionPane.showMessageDialog(null, "Gagal");
+            }
+        }
+
+        emf.getTransaction().commit();
+        emf.close();
     }//GEN-LAST:event_jPanelMasukMouseClicked
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void jTextFieldUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsernameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jPanelMasukMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelMasukMousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jPanelMasukMousePressed
+    }//GEN-LAST:event_jTextFieldUsernameActionPerformed
 
     private void jPanelMasukMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelMasukMouseMoved
         jPanelMasuk.setBackground(Color.LIGHT_GRAY);
     }//GEN-LAST:event_jPanelMasukMouseMoved
 
     private void jPanelMasukMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelMasukMouseExited
-        jPanelMasuk.setBackground(new Color(0,204,0));
+        jPanelMasuk.setBackground(new Color(0, 204, 0));
     }//GEN-LAST:event_jPanelMasukMouseExited
+
+    private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
+        // TODO add your handling code here:
+        Buat frameBuat = new Buat();
+        frameBuat.setVisible(true);
+    }//GEN-LAST:event_jPanel2MouseClicked
+
+    private void jPanel2MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseMoved
+        // TODO add your handling code here:
+        jPanel2.setBackground(Color.LIGHT_GRAY);
+    }//GEN-LAST:event_jPanel2MouseMoved
+
+    private void jPanel2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseExited
+        // TODO add your handling code here:
+        jPanel2.setBackground(new Color(153, 255, 153));
+
+    }//GEN-LAST:event_jPanel2MouseExited
 
     /**
      * @param args the command line arguments
      */
+    ArrayList<Akun> dataAkun;
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -188,10 +225,12 @@ public class login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanelMasuk;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField jPasswordFieldPassword;
+    private javax.swing.JTextField jTextFieldUsername;
     // End of variables declaration//GEN-END:variables
 }
