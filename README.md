@@ -11,10 +11,23 @@ Pada project ini saya membuat sebuah aplikasi sederhana mengenai sistem perpusta
 
 ## Langkah - langkah
 
-* Membuat CLASS dibutuhkan beserta atributnya (buku, skripsi, anggota)
-* Membuat tabel yang dibutuhkan pada postgres.
-* Membuat java GUI sesuai dengan kebutuhan yang ada.
-* Menghubungkan java netbeans dengan postgres
+1. Instal jdk, netbeans, dan postgres
+2. Membuat database pada postgresql
+3. Membuat tabel dan atribut yang dibutuhkan postgresql
+4. Membuat koneksi pada netbeans dengan postgresql yaitu dengan add 
+library
+5. Membuat class masing-masing tabel yaitu dengan menggunakan new 
+entity class from database
+6. Mendesain tampilan(gui) pada netbeans, dan tampilan masing-masing 
+menu dan fitur-fiturnya
+7. Kemudian memulai membuat source code yang dibutuhkan sesuai 
+dengan tampilan gui yang sudah dibuat
+8. Untuk report : pertama tama instal plugin, kemudian add library 
+jasperreport, menambahkan beberapa file jar(loggins, beanutils, 
+digester, collections) , kemudian mulai mendesain report
+9. Untuk button upload membutuhkan library tambahan yaitu commons 
+csv
+10. Pada gui saya juga menambahkan jcalender untuk input tanggal
 
 ## Progres minggu ke 1
 
@@ -32,25 +45,37 @@ Pada project ini saya membuat sebuah aplikasi sederhana mengenai sistem perpusta
 * Membuat frame login yang terhubung dengan database
 
 ### Tampilan Login
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/b07cfffc-f4b5-4777-93cd-82177dd09f06)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/ab972a9e-1f1c-485c-9ddb-22fe33f6193d)
+
 
 
 ### Tampilan Buat Akun
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/cfc25b9d-b355-442e-88a3-3c6b0434e514)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/84c7ec3a-8358-47b1-86a1-a0ea5835a744)
+
 
 
 ### Tampilan Menu
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/f7fb6e3d-147f-4d64-86d3-706efab4e9c2)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/267e3d28-65b7-4283-9409-fdc9346350d1)
+
 
 
 ### Tampilan Frame Buku
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/659cd2d0-2b31-4906-b50d-85cadcaffec0)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/ecac33ce-d386-4965-9808-8cb15827f531)
+
 
 
 ### Tampilan Frame Skripsi
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/e68970c3-edf8-42aa-add8-a890f741477e)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/4a50f6da-6abb-4829-a11a-5aaeaafb36f8)
+
 
 
 ### Tampilan Frame Anggota
-![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/3f41aca3-9854-4821-b3ec-512538a52c39)
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/808a2747-0aae-4635-9fe9-d1b3ca55c43b)
+
+
+
+### Tampilan Frame Peminjaman
+![image](https://github.com/Arrio23/PROJECT_PERPUSTAKAAN/assets/148852047/ebb454ea-0bc0-4d38-925c-05078a8a724f)
+
+
 
