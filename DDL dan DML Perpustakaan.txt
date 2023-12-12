@@ -1,0 +1,670 @@
+/*==============================================================*/
+/* DBMS name:      PostgreSQL 9.x                               */
+/* Created on:     29/11/2023 10:37:10                          */
+/*==============================================================*/
+
+
+/*==============================================================*/
+/* Table: AKUN                                                  */
+/*==============================================================*/
+create table AKUN (
+   USERNAME             VARCHAR(20)          not null,
+   PASSWORD             VARCHAR(20)          null,
+   constraint PK_AKUN primary key (USERNAME)
+);
+
+/*==============================================================*/
+/* Index: AKUN_PK                                               */
+/*==============================================================*/
+create unique index AKUN_PK on AKUN (
+USERNAME
+);
+
+/*==============================================================*/
+/* Table: ANGGOTA                                               */
+/*==============================================================*/
+create table ANGGOTA (
+   ID_ANGGOTA           VARCHAR(5)           not null,
+   NAMA_ANGGOTA         VARCHAR(30)          null,
+   ANGKATAN             VARCHAR(4)           null,
+   ALAMAT               VARCHAR(30)          null,
+   constraint PK_ANGGOTA primary key (ID_ANGGOTA)
+);
+
+/*==============================================================*/
+/* Index: ANGGOTA_PK                                            */
+/*==============================================================*/
+create unique index ANGGOTA_PK on ANGGOTA (
+ID_ANGGOTA
+);
+
+/*==============================================================*/
+/* Table: BUKU                                                  */
+/*==============================================================*/
+create table BUKU (
+   ISBN                 VARCHAR(5)           not null,
+   JUDUL_BUKU           VARCHAR(30)          null,
+   TAHUN_TERBIT         VARCHAR(4)           null,
+   PENERBIT             VARCHAR(30)          null,
+   KATEGORI		VARCHAR(30)	     null,
+   constraint PK_BUKU primary key (ISBN)
+);
+
+/*==============================================================*/
+/* Index: BUKU_PK                                               */
+/*==============================================================*/
+create unique index BUKU_PK on BUKU (
+ISBN
+);
+
+
+/*==============================================================*/
+/* Table: SKRIPSI                                               */
+/*==============================================================*/
+create table SKRIPSI (
+   NIM                  VARCHAR(5)           not null,
+   JUDUL_SKRIPSI        VARCHAR(30)          null,
+   TAHUN_SKRIPSI        VARCHAR(4)           null,
+   constraint PK_SKRIPSI primary key (NIM)
+);
+
+/*==============================================================*/
+/* Index: SKRIPSI_PK                                            */
+/*==============================================================*/
+create unique index SKRIPSI_PK on SKRIPSI (
+NIM
+);
+
+/*==============================================================*/
+/* Table: PEMINJAMAN                                            */
+/*==============================================================*/
+CREATE TABLE public.peminjaman(
+    id_peminjaman character varying(5) NOT NULL,
+    id_peminjam character varying(5),
+    nama_peminjam character varying(30),
+    angkatan character varying(4),
+    id_buku character varying(5),
+    id_skripsi character varying(5),
+    tanggal_pinjam date,
+    tanggal_kembali date,
+    jumlah int,
+    kategori character varying(30),
+    PRIMARY KEY (id_peminjaman),
+    CONSTRAINT id_peminjam FOREIGN KEY (id_peminjam)
+        REFERENCES public.anggota (id_anggota) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT id_buku FOREIGN KEY (id_buku)
+        REFERENCES public.buku (isbn) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT id_skripsi FOREIGN KEY (id_skripsi)
+        REFERENCES public.skripsi (nim) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+ALTER TABLE IF EXISTS public.peminjaman
+    OWNER to postgres;
+
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0001', 'Eka', '2021', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0002', 'Rio', '2022', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0003', 'Budi', '2021', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0004', 'Ridwan', '2020', 'MJK');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0005', 'Riski', '2019', 'JBR');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0006', 'Harto', '2018', 'JBG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0007', 'Nisa', '2020', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0008', 'Ani', '2020', 'TLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0009', 'Jono', '2016', 'MDN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0010', 'Kacong', '2018', 'MDR');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0011', 'Ilham', '2020', 'BWI');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0012', 'Luki', '2021', 'MLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0013', 'Fajar', '2021', 'LMG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0014', 'Setya', '2021', 'PRB');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0015', 'Ahmad', '2020', 'TGR');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0016', 'Anton', '2019', 'JKT');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0017', 'Cahya', '2018', 'BWI');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0018', 'Dika', '2019', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0019', 'Ferry', '2019', 'LMG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0020', 'Firman', '2022', 'TBN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0021', 'Danu', '2022', 'TBN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0022', 'Tomas', '2022', 'TBN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0023', 'Krisna', '2021', 'TBN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0024', 'Agung', '2019', 'BWI');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0025', 'Chandra', '2020', 'BWI');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0026', 'Nicky', '2023', 'JMB');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0027', 'Putra', '2021', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0028', 'Zainul', '2018', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0029', 'Arif', '2019', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0030', 'Retno', '2021', 'MLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0031', 'Udin', '2019', 'MLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0032', 'Dodo', '2020', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0033', 'Rafly', '2022', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0034', 'Irfan', '2022', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0035', 'Fadli', '2022', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0036', 'Rahmat', '2021', 'TLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0037', 'Ridho', '2019', 'JBR');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0038', 'Basori', '2020', 'NGJ');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0039', 'Imel', '2021', 'BLT');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0040', 'Pristy', '2020', 'TBN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0041', 'Evi', '2020', 'SLO');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0042', 'Wildan', '2019', 'BLT');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0043', 'Agel', '2020', 'BJN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0044', 'Bima', '2021', 'BJN');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0045', 'Fatah', '2019', 'MLG');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0046', 'Muhib', '2020', 'SDA');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0047', 'Haidar', '2019', 'SBY');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0048', 'Sapiq', '2022', 'JBR');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0049', 'Torry', '2021', 'BLT');
+INSERT INTO public.anggota(
+	id_anggota, nama_anggota, angkatan, alamat)
+	VALUES ('0050', 'Yaya', '2019', 'NGJ');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0003', 'Manajemen', '2007', 'Airlangga', 'Ekonomi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0004', 'Politik', '2010', 'BSE', 'Politik');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0005', 'Pertumbuhan', '2006', 'Gramedia', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0006', 'Arsitektur Komputer', '2015', 'Airlangga', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0007', 'Rotasi Bumi', '2013', 'BSE', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0008', 'Akuntansi', '2011', 'BSE', 'Ekonomi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0009', 'Anatomi Hewan', '2012', 'BSE', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0010', 'Anatomi Tumbuhan', '2012', 'BSE', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0011', 'Sejarah Topeng', '2010', 'Airlangga', 'Seni Rupa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0012', 'Denda Tahanan', '2010', 'Airlangga', 'Hukum');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0013', 'Keamanan Jaringan', '2016', 'Gramedia', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0014', 'AI', '2018', 'Gramedia', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0015', 'Tari Gandrung', '2012', 'Falcon', 'Seni Rupa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0016', 'UI/UX Design', '2018', 'Grasindo', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0017', 'Dasar Laut', '2010', 'Airlangga', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0018', 'Pohon Mati', '2012', 'Falcon', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0019', 'Monyet Putih', '2005', 'Airlangga', 'Seni Rupa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0020', 'Tabungan', '2015', 'Grasindo', 'Ekonomi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0021', 'Hitung Uang', '2012', 'Grasindo', 'Ekonomi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0022', 'Manusia Purba', '2008', 'Gramedia', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0023', 'Mataraman', '2009', 'Falcon', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0024', 'Apa kata dunia', '2014', 'Gramedia', 'Hukum');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0025', 'Ada Tuhan', '2012', 'Republika', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0026', 'Hadist dan Al-Quran', '2007', 'Grasindo', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0027', 'Sejarah Islam', '2004', 'BSE', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0028', 'Plural', '2011', 'BSE', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0029', 'Awal Demokrasi', '2013', 'Airlangga', 'Politik');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0030', 'Republik atau Kerajaan', '2014', 'Airlangga', 'Politik');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0031', 'Pengantar Studi Islam', '2018', 'Gramedia', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0032', 'Tafsir Hadist', '2016', 'Gramedia', 'Agama');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0033', 'Internet of Things', '2016', 'Gramedia', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0034', 'Programming', '2015', 'Airlangga', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0035', 'Frontend Developer', '2018', 'Technobook', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0036', 'Backend Developer', '2018', 'Technobook', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0037', 'Database System', '2013', 'Technobook', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0038', 'Object Oriented Program', '2015', 'Technobook', 'Teknologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0039', 'Pentingnya Mengenal Diri', '2012', 'GagasMedia', 'Psikologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0040', 'Self Rewards', '2015', 'GagasMedia', 'Psikologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0041', 'Hati dan Pikiran', '2017', 'GagasMedia', 'Psikologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0042', 'Kuatkan Mental', '2012', 'GagasMedia', 'Psikologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0043', 'Logis Harmonis', '2014', 'GagasMedia', 'Psikologi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0044', 'Bimasakti', '2013', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0045', 'Nafas Pohon', '2012', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0046', 'Mamalia Laut', '2016', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0047', 'Mamalia Darat', '2016', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0048', 'Ovovivipar', '2015', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0049', 'Vivipar', '2015', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0050', 'Ovipar', '2016', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0051', 'Oksigen', '2017', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0052', 'Karbondiosida', '2017', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0053', 'Karbonmonookisda', '2017', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0054', 'Gas Mulia', '2017', 'Mizan Publishing', 'Sains');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0055', 'Manfaat Banyak Bahasa', '2014', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0056', 'Latihan Berbahasa', '2016', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0057', 'Inggris dan Arab', '2013', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0058', 'Isyarat pun Bahasa', '2012', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0059', 'Buta Bahasa', '2011', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0060', 'Berbahasa Bisa', '2017', 'Pustaka Alfabet', 'Bahasa');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0061', 'Kerajaan Hindu Budha', '2014', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0062', 'Kerajaan Islam', '2015', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0063', 'Manusia Praaksara', '2011', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0064', 'Zaman Batu', '2012', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0065', 'Zaman Bercocoktanam', '2014', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0066', 'Zaman Akhir', '2023', 'Republika', 'Sejarah');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0067', 'Benua Asia', '2013', 'SIS', 'Geografi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0068', 'Benua Afrika', '2013', 'SIS', 'Geografi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0069', 'Benua Eropa', '2013', 'SIS', 'Geografi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0070', 'Benua Amerika', '2013', 'SIS', 'Geografi');
+INSERT INTO public.buku(
+	isbn, judul_buku, tahun_terbit, penerbit, kategori)
+	VALUES ('0071', 'Benua Australia', '2013', 'SIS', 'Geografi');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0004', 'Kemanusiaan', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0005', 'Bukti Konkrit', '2019');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0006', 'Jalan Ninja', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0007', 'Standar Keamanan', '2021');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0008', 'Industri 4.0', '2018');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0009', 'Ketentuan Hukum', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0010', 'Generasi Z', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0011', 'Jawa Menengah', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0012', 'Kemanusiaan', '2014');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0013', 'Ekosistem Perusahaan', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0014', 'Standar Kehidupan', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0015', 'Industri 2.0', '2012');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0016', 'Perilaku tumbuhan', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0017', 'Sulit Eksekusi', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0018', 'Diantara Manusia', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0019', 'IMTAQ IPTEK', '2014');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0020', 'Perilaku Hewan', '2012');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0021', 'Hubungan Tuhan', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0022', 'Negara Republik', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0023', 'Perilaku Masyarakat', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0024', 'Ujung timur', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0025', 'Kemanusiaan', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0026', 'Hubungan Manusia', '2018');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0027', 'Egois', '2018');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0028', 'Rancangan Komputer', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0029', 'Cara Berfikir', '2018');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0030', 'Rancangan Elektro', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0031', 'Manajemen Organisasi', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0032', 'Maju Kena Mundur Kena', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0033', 'Toleransi Beragama', '2014');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0034', 'Pluralisme', '2007');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0035', 'Lingkungan Nyaman', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0036', 'Rezeki datang atau dijemput', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0037', 'Takdir Muallaq', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0038', 'Takdir Mubram', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0039', 'Hukum Indonesia', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0040', 'Hukum Islam', '2010');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0041', 'Efektifkah Penjara', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0042', 'Hukum Dunia', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0043', 'Hukum Alam', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0044', 'Sistem Hidup Platypus', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0045', 'Crakcer', '2018');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0046', 'Hacker', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0047', 'Cyber Security', '2019');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0048', 'Masa Jaya Manusia', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0049', 'Kehidupan Kuno', '2010');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0050', 'Kehidupan Milenial', '2020');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0051', 'Manuskrip Batu', '2012');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0052', 'Aristektur Komputer', '2014');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0053', 'Arsitektur Bangunan', '2016');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0054', 'Keamanan Informasi', '2019');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0055', 'Virus Komputer', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0056', 'Virus Corona', '2021');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0057', 'Berfikir Kritis', '2017');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0058', 'Tindak Lanjut Hukum', '2012');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0059', 'Survei Penggunaan Chrome', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0060', 'Survei Penggunaan Yahoo', '2014');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0061', 'Survei Penggunaan Google', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0062', 'Survei Penggunaan Youtube', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0063', 'Survei Penggunaan BBM', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0064', 'Survei Penggunaan WhatsApp', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0065', 'Survei Penggunaan Facebook', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0066', 'Survei Penggunaan IG', '2015');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0067', 'Kelayakan Alat', '2013');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0068', 'Kehidupan Beragama', '2012');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0069', 'Kehidupan Sosial', '2011');
+INSERT INTO public.skripsi(
+	nim, judul_skripsi, tahun_skripsi)
+	VALUES ('0070', 'Kehormatan', '2010');
